@@ -1,3 +1,4 @@
+import json
 from random import randrange
 from src.millerRabin import generateLargePrime
 from src.math import gcd, findModInverse
@@ -31,5 +32,12 @@ def generateKey(keySize=1024):
 
     print("Public key:", publicKey)
     print("Private key:", privateKey)
+
+    # Save keys
+    with open("publicKey.json", "w") as file:
+        file.write(json.dumps(publicKey))
+
+    with open("privateKey.json", "w") as file:
+        file.write(json.dumps(privateKey))
 
     return (publicKey, privateKey)
