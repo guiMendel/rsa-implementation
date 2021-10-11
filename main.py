@@ -1,9 +1,16 @@
 from argparse import ArgumentParser
 from src.keyGenerator import generateKey
 from src.cryptography import encrypt, decrypt
+from src.sessionKeyHandler import generateSessionKey, eraseSessionKey
 
 # Maps script mode to functionality
-executionModes = {"gen_key": generateKey, "enc": encrypt, "dec": decrypt}
+executionModes = {
+    "gen_key": generateKey,
+    "init_session": generateSessionKey,
+    "end_session": eraseSessionKey,
+    "enc": encrypt,
+    "dec": decrypt,
+}
 
 
 def get_args():
