@@ -1,4 +1,5 @@
 import json
+from src.oaep import oaepPad, oaepUnpad
 
 
 def encrypt(args):
@@ -17,19 +18,18 @@ def encrypt(args):
     messageBytes = args.content.encode("utf-8")
     messageNumber = int.from_bytes(messageBytes, "little")
 
+    # Apply oaep
+    paddedMessageNumber, padLength = oaepPad(messageNumber)
+
     # Apply exponentiation
-    cypher = pow(messageNumber, e, n)
+    cypher = pow(paddedMessageNumber, e, n)
 
     # Save it
-    with open("cypher.txt", "w") as cypherFile:
-        cypherFile.write(str(cypher))
+    with open("cypher.json", "w") as cypherFile:
+        cypherFile.write(json.dumps((str(cypher), padLength)))
 
 
 def decrypt(args):
-    # Make sure content was provided
-    if args.content is None:
-        raise ValueError("Decryption needs content")
-
     # Get the key
     with open("privateKey.json", "r") as keyFile:
         privateKey = json.loads(keyFile.read())
@@ -37,11 +37,18 @@ def decrypt(args):
         # Get e and n
         n, d = privateKey
 
+    # Get cypher and padLength
+    with open("cypher.json", "r") as cypherFile:
+        content, padLength = json.loads(cypherFile.read())
+
     # Convert content to number
-    cypher = int(args.content)
+    paddedCypher = int(content)
 
     # Apply exponentiation
-    messageNumber = pow(cypher, d, n)
+    paddedMessageNumber = pow(paddedCypher, d, n)
+
+    # Unpad it
+    messageNumber = oaepUnpad(paddedMessageNumber, padLength)
 
     # Turn message back to string
     messageBytes = messageNumber.to_bytes(

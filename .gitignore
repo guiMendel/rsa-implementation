@@ -1,6 +1,7 @@
 privateKey.json
 publicKey.json
 sessionKey.json
+cypher.json
 cypher.txt
 message.txt
 .vscode
