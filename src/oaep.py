@@ -27,7 +27,7 @@ def toBinary(value):
         return bin(value)[2:]
     # If is bytes, convert to int first
     except TypeError:
-        return bin(int.from_bytes(value, "big"))[2:]
+        return bin(int.from_bytes(value, "little"))[2:]
 
 
 def zeroPad(message, length):

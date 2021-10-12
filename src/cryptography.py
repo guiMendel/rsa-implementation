@@ -1,3 +1,4 @@
+from base64 import b64decode, b64encode
 import json
 from src.oaep import oaepPad, oaepUnpad
 
@@ -24,9 +25,12 @@ def encrypt(args):
     # Apply exponentiation
     cypher = pow(paddedMessageNumber, e, n)
 
+    # Apply base 64, pop the first 2 chars (always "b'")
+    result = str(b64encode(str(cypher).encode("ascii")))[2:]
+
     # Save it
     with open("cypher.json", "w") as cypherFile:
-        cypherFile.write(json.dumps((str(cypher), padLength)))
+        cypherFile.write(json.dumps((result, padLength)))
 
 
 def decrypt(args):
@@ -41,8 +45,8 @@ def decrypt(args):
     with open("cypher.json", "r") as cypherFile:
         content, padLength = json.loads(cypherFile.read())
 
-    # Convert content to number
-    paddedCypher = int(content)
+    # Convert content to number, removing base64
+    paddedCypher = int(b64decode(content).decode("ascii"))
 
     # Apply exponentiation
     paddedMessageNumber = pow(paddedCypher, d, n)
